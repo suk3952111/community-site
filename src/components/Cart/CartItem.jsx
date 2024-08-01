@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import styles from "./CartItem.module.css";
-import { useAuthContext } from "../../App";
+import {
+  useAuthContext,
+  useLocalCartContext,
+  useUserCartContext,
+} from "../../App";
 import { supabase } from "@/main";
 const CartItem = ({ item }) => {
-  const { cart, updateCart, user, updateUserCart, fetchUserCart } =
-    useAuthContext();
+  const { user } = useAuthContext();
+  const { cart, updateCart } = useLocalCartContext();
+  const { updateUserCart, fetchUserCart } = useUserCartContext();
 
   const [quantity, setQuantity] = useState(item.number);
 

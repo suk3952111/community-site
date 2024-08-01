@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useAuthContext } from "@/App";
+import { useLocalCartContext } from "@/App";
 
 const useCartItem = (productDetail, toggleModal) => {
-  const { cart, updateCart } = useAuthContext();
+  const { cart, updateCart } = useLocalCartContext();
   const [cartItem, setCartItem] = useState({ price: 0, number: 0 });
 
   useEffect(() => {

@@ -1,44 +1,45 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/main";
 import styles from "./CommentList.module.css";
+import { uploadImage } from "@/utils/uploadImage"; // 업로드 함수 임포트
 
-const CommentList = ({ comments, user, setComments }) => {
+const CommentList = ({ comments, user, setComments, productDetail }) => {
   const editingCommentRef = useRef(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingImage, setEditingImage] = useState(null);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (productDetail) {
+        const { data, error } = await supabase
+          .from("comments")
+          .select("*")
+          .eq("product_id", productDetail.id);
+
+        if (error) {
+          alert("댓글을 가져오는 중 오류가 발생했습니다:", error);
+        } else {
+          setComments(data);
+        }
+      }
+    };
+
+    fetchComments();
+  }, [productDetail]);
 
   const handleEditComment = async (commentId) => {
     const editingCommentContent = editingCommentRef.current.value;
     let imageUrl = null;
 
     if (editingImage) {
-      const fileName = `${Date.now()}_${editingImage.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("images")
-        .upload(fileName, editingImage, {
-          cacheControl: "3600",
-          upsert: false,
-        });
+      const { error, publicUrl } = await uploadImage(editingImage);
 
-      if (uploadError) {
-        alert(
-          "이미지를 업로드하는 중 오류가 발생했습니다:" + uploadError.message
-        );
+      if (error) {
+        alert("이미지를 업로드하는 중 오류가 발생했습니다:" + error.message);
         return;
       }
 
-      const { data: publicData, error: urlError } = supabase.storage
-        .from("images")
-        .getPublicUrl(fileName);
-
-      if (urlError) {
-        alert(
-          "이미지 URL을 가져오는 중 오류가 발생했습니다:" + urlError.message
-        );
-        return;
-      }
-
-      imageUrl = publicData.publicUrl;
+      imageUrl = publicUrl;
     }
 
     const updateData = {
@@ -107,10 +108,9 @@ const CommentList = ({ comments, user, setComments }) => {
               </p>
               {comment.image_url && (
                 <img
-                  className={styles.commetImage}
+                  className={styles.commentImage}
                   src={comment.image_url}
                   alt="comment image"
-                  className={styles.commentImage}
                 />
               )}
               {comment.email === user?.email && (

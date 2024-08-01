@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAsync } from "../hooks/useAsync";
 import { fetchProduct } from "@/api/api";
@@ -8,7 +8,6 @@ import Modal from "@/components/common/Modal";
 import useToggle from "@/hooks/useToggle";
 import useCartItem from "../hooks/useCartItem";
 import { useAuthContext } from "../App";
-import { supabase } from "@/main";
 import CommentList from "@/components/ProductDetail/CommentList";
 import AddComment from "@/components/ProductDetail/AddComment";
 import useUserCartItem from "../hooks/useUserCartItem";
@@ -24,25 +23,6 @@ const ProductDetail = () => {
     loading,
     error,
   } = useAsync(() => fetchProduct(productSlug));
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      if (productDetail) {
-        const { data, error } = await supabase
-          .from("comments")
-          .select("*")
-          .eq("product_id", productDetail.id);
-
-        if (error) {
-          alert("댓글을 가져오는 중 오류가 발생했습니다:", error);
-        } else {
-          setComments(data);
-        }
-      }
-    };
-
-    fetchComments();
-  }, [productDetail]);
 
   const { cartItem, addCartItemNumber, removeCartItemNumber, handleAddToCart } =
     useCartItem(productDetail, toggleModal);
@@ -136,6 +116,7 @@ const ProductDetail = () => {
             comments={comments}
             user={user}
             setComments={setComments}
+            productDetail={productDetail}
           />
           <AddComment
             productDetail={productDetail}

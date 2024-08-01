@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
-import { supabase } from "@/main"; // supabase 클라이언트 생성 코드 포함
+import { supabase } from "@/main";
 import styles from "@/pages/ProductDetail.module.css";
 import { useNavigate } from "react-router-dom";
+import { uploadImage } from "@/utils/uploadImage"; // 업로드 함수 임포트
 
 const AddComment = ({ productDetail, user, setComments }) => {
   const navigate = useNavigate();
@@ -14,33 +15,14 @@ const AddComment = ({ productDetail, user, setComments }) => {
 
     let imageUrl = null;
     if (image) {
-      const fileName = `${Date.now()}_${image.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("images")
-        .upload(fileName, image, {
-          cacheControl: "3600",
-          upsert: false,
-        });
+      const { error, publicUrl } = await uploadImage(image);
 
-      if (uploadError) {
-        alert(
-          "이미지를 업로드하는 중 오류가 발생했습니다: " + uploadError.message
-        );
+      if (error) {
+        alert("이미지를 업로드하는 중 오류가 발생했습니다: " + error.message);
         return;
       }
 
-      const { data: publicData, error: urlError } = supabase.storage
-        .from("images")
-        .getPublicUrl(fileName);
-
-      if (urlError) {
-        alert(
-          "이미지 URL을 가져오는 중 오류가 발생했습니다: " + urlError.message
-        );
-        return;
-      }
-
-      imageUrl = publicData.publicUrl;
+      imageUrl = publicUrl;
     }
 
     const { data, error } = await supabase

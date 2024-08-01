@@ -5,6 +5,7 @@ import { fetchProducts, fetchCategories } from "@/api/api";
 import { sortProducts } from "@/utils/util";
 import styles from "./ProductsList.module.css";
 import { Link } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 const SORT_OPTIONS = {
   PRICE_LOW_TO_HIGH: "price-lowtohigh",
@@ -76,6 +77,7 @@ const ProductsList = () => {
   }
 
   const categories = [CATEGORY_ALL, ...allCategories];
+  console.log(categories);
   return (
     <div className={styles.body}>
       <div className={styles.category}>
@@ -90,8 +92,8 @@ const ProductsList = () => {
               value={filters.category}
               onChange={handleFilterChange}
             >
-              {categories.map((cat, index) => (
-                <option key={index} value={cat}>
+              {categories.map((cat) => (
+                <option key={uuidv4()} value={cat}>
                   {cat}
                 </option>
               ))}
@@ -120,7 +122,7 @@ const ProductsList = () => {
         <p className={styles.itemListTitle}>상품 리스트</p>
         <ul className={styles.itemList}>
           {filteredProducts.map((product) => (
-            <li key={`key-${product.id}`} className={styles.items}>
+            <li key={uuidv4()} className={styles.items}>
               <Link
                 to={`/products/${product.id}`}
                 style={{ textDecoration: "none" }}

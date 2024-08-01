@@ -1,8 +1,14 @@
 import CartItem from "@/components/Cart/CartItem";
-import { useAuthContext } from "../App";
+import {
+  useAuthContext,
+  useLocalCartContext,
+  useUserCartContext,
+} from "../App";
 
 const Cart = () => {
-  const { cart, userCart, user } = useAuthContext();
+  const { user } = useAuthContext();
+  const { cart } = useLocalCartContext();
+  const { userCart } = useUserCartContext();
 
   const calculateTotalPrice = (cartItems) => {
     return cartItems.reduce(

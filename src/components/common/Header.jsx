@@ -1,5 +1,9 @@
-import { useAuthContext } from "@/App";
 import { supabase } from "@/main";
+import {
+  useAuthContext,
+  useLocalCartContext,
+  useUserCartContext,
+} from "../../App";
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
 
@@ -11,7 +15,9 @@ function getLinkStyle({ isActive }) {
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, setUser, cart, userCart } = useAuthContext();
+  const { user, setUser } = useAuthContext();
+  const { cart } = useLocalCartContext();
+  const { userCart } = useUserCartContext();
 
   const onLogout = async (e) => {
     e.preventDefault();

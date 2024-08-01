@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuthContext } from "../App";
+import { useUserCartContext } from "../App";
 
 const useUserCartItem = (productDetail, toggleModal) => {
   const [userCartItem, setUserCartItem] = useState({
@@ -9,7 +9,7 @@ const useUserCartItem = (productDetail, toggleModal) => {
     price: 0,
     number: 0,
   });
-  const { updateUserCart } = useAuthContext();
+  const { updateUserCart } = useUserCartContext();
 
   useEffect(() => {
     if (productDetail && productDetail.id) {
